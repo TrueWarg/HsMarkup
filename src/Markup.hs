@@ -1,11 +1,12 @@
 module Markup
   ( Document
   , Structure(..)
+  , parse
   )
 where
 
 import Numeric.Natural
-import Data.Maybe
+import Data.Maybe (maybeToList)
 
 type Document = [Structure]
 
@@ -60,13 +61,6 @@ parseLines context txts =
                 Just (Paragraph text) ->
                   parseLines (Just (Paragraph (unwords [paragraph, line]))) rest
                 _ -> maybe id (:) context (parseLines (Just (Paragraph line)) rest)
-
-    
-
-
-                  
-         
-
-
+                
 trim :: String -> String
 trim = unwords . words
