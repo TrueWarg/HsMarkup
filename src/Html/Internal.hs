@@ -1,18 +1,33 @@
 module Html.Internal where
 
 import Prelude(String, map, (.), concat, (<>), Show(..)) 
+import Numeric.Natural
 
-wrap :: String -> String -> String
-wrap tag content = "<"<> tag <>">" <> content <> "</" <> tag <> ">"
+newtype Html = Html String
+  deriving Show
 
-html :: String -> Html
-html = Html . wrap "html" . escape
+newtype Structure = Structure String
+  deriving Show
+
+type Title = String
+
+instance Semigroup Structure where
+  (<>) s1 s2 = Structure (getStructureValue s1 <> getStructureValue s2) 
+
+instance Monoid Structure where
+  mempty = empty_
+
+html :: Title -> Structure -> Html
+html title content =
+  Html
+    ( wrap "html"
+      ( wrap "head" (wrap "title" (escape title))
+        <> wrap "body" (getStructureString content)
+      )
+    )
 
 head :: String -> Structure
 head = Structure . wrap "head" . escape
-
-title :: String -> Structure
-title = Structure . wrap "title" . escape
 
 body :: String -> Structure
 body = Structure . wrap "body" . escape
@@ -23,17 +38,25 @@ p = Structure . wrap "p" . escape
 h1 :: String -> Structure
 h1 = Structure . wrap "h1" . escape
 
+h :: Natural -> String -> Structure
+h size = Structure . wrap ("h" <> show size) . escape
+
 li :: String -> Structure
 li = Structure . wrap "li" . escape
 
-newtype Html = Html String
-  deriving Show
+ul :: [Structure] -> Structure
+ul = Structure . wrap "ul" . concat . map (wrap "li" . getStructureValue)
 
-newtype Structure = Structure String
-  deriving Show
+ol :: [Structure] -> Structure
+ol = Structure . wrap "ol" . concat . map (wrap "li" . getStructureValue)
 
-instance Semigroup Structure where
-  (<>) s1 s2 = Structure (getStructureValue s1 <> getStructureValue s2) 
+code :: String -> Structure
+code = Structure . el "pre"
+
+empty = Structure ""
+
+wrap :: String -> String -> String
+wrap tag content = "<"<> tag <>">" <> content <> "</" <> tag <> ">"
 
 escape :: String -> String
 escape = let 
@@ -49,17 +72,10 @@ escape = let
     in 
         concat . map escapeChar
 
-wrapInLi :: Structure -> Structure
-wrapInLi (Structure value) = Structure (wrap "li" value)  
-
 getStructureValue :: Structure -> String
 getStructureValue (Structure value) = value
 
-ul :: [Structure] -> Structure
-ul = Structure . wrap "ul" . concat . map (wrap "li" . getStructureValue)
-
-ol :: [Structure] -> Structure
-ol = Structure . wrap "ol" . concat . map (wrap "li" . getStructureValue)
-
-pre :: String -> Structure
-pre = Structure . wrap "pre" . escape
+render :: Html -> String
+render html =
+  case html of
+    Html str -> str

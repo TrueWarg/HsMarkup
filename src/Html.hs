@@ -2,10 +2,12 @@ module Html
   ( Html
   , Title
   , Structure
-  , html_
-  , p_
-  , h1_
-  , append_
+  , html
+  , h,
+  , p
+  , ul
+  , ol
+  , code
   , render
   )
   where
