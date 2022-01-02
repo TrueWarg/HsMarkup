@@ -23,27 +23,47 @@ parse = parseLines Nothing . lines
 parseLines :: Maybe Structure -> [String] -> Document
 parseLines context txts =
   case txts of
-    [] -> case context
-           Nothing -> []
-           Just a -> [a]
+    [] -> maybeToList context
+
+    ('*' : ' ' : line) : rest ->
+      maybe id (:) context (Header 1 (trim line) : parseLines Nothing rest)
+
+    ('-' : ' ' : line) : rest ->
+      case context of 
+        Just (UnorderedList lines) ->
+          parseLines (Just (UnorderedList (lines <> [trim line]))) rest
+        _ -> 
+          maybe id (:) context (parseLines (Just (UnorderedList [trim line])) rest)
+    
+    ('>' : ' ' : line) : rest ->
+      case context of 
+        Just (CodeBlock lines) ->
+          parseLines (Just (CodeBlock (lines <> [trim line]))) rest
+        _ -> 
+          maybe id (:) context (parseLines (Just (CodeBlock [trim line])) rest)
+
+    ('#' : ' ' : line) : rest ->
+      case context of 
+        Just (OrderedList lines) ->
+          parseLines (Just (OrderedList (lines <> [line]))) rest
+        _ -> 
+          maybe id (:) context (parseLines (Just (OrderedList [line])) rest)
+    
     currentLine : rest ->
-      case trim currentLine of
-        "" -> case context
-                 Nothing -> []
-                 Just a -> a: parseLines Nothing rest
-        [Char] -> 
-        ">" -> case context of
-                  Nothing -> parseLines Maybe CodeBlock [currentLine] rest
-                  Just a -> parseLines Maybe (currentLine : a) rest
-        "-" -> case context of
-                  Nothing -> parseLines Maybe UnorderedList [currentLine] rest
-                  Just a -> parseLines Maybe (currentLine : a) rest
-        "#" -> case context of
-                  Nothing -> parseLines Maybe OrderedList [currentLine] rest
-                  Just a -> parseLines Maybe (currentLine : a) rest
-         _ -> case context of
-                  Nothing -> parseLines Maybe Paragraph currentLine rest
-                  Just a -> parseLines Maybe Paragraph (unlines (reverse currentParagraph)) rest
+      let 
+        line = trim currentLine
+        in
+          case line of 
+            "" -> maybe id (:) context (parseLines Nothing rest)
+            _  ->
+              case context of
+                Just (Paragraph text) ->
+                  parseLines (Just (Paragraph (unwords [paragraph, line]))) rest
+                _ -> maybe id (:) context (parseLines (Just (Paragraph line)) rest)
+
+    
+
+
                   
          
 
