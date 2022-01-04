@@ -1,4 +1,4 @@
-module Markup
+module HsMarkup.Markup
   ( Document
   , Structure(..)
   , parse
@@ -59,7 +59,7 @@ parseLines context txts =
             _  ->
               case context of
                 Just (Paragraph text) ->
-                  parseLines (Just (Paragraph (unwords [paragraph, line]))) rest
+                  parseLines (Just (Paragraph (unwords [text, line]))) rest
                 _ -> maybe id (:) context (parseLines (Just (Paragraph line)) rest)
                 
 trim :: String -> String

@@ -1,6 +1,5 @@
-module Html.Internal where
+module HsMarkup.Html.Internal where
 
-import Prelude(String, map, (.), concat, (<>), Show(..)) 
 import Numeric.Natural
 
 newtype Html = Html String
@@ -15,14 +14,14 @@ instance Semigroup Structure where
   (<>) s1 s2 = Structure (getStructureValue s1 <> getStructureValue s2) 
 
 instance Monoid Structure where
-  mempty = empty_
+  mempty = empty
 
 html :: Title -> Structure -> Html
 html title content =
   Html
     ( wrap "html"
       ( wrap "head" (wrap "title" (escape title))
-        <> wrap "body" (getStructureString content)
+        <> wrap "body" (getStructureValue content)
       )
     )
 
@@ -51,7 +50,7 @@ ol :: [Structure] -> Structure
 ol = Structure . wrap "ol" . concat . map (wrap "li" . getStructureValue)
 
 code :: String -> Structure
-code = Structure . el "pre"
+code = Structure . wrap "pre"
 
 empty = Structure ""
 

@@ -1,9 +1,9 @@
-module Html
+module HsMarkup.Html
   ( Html
   , Title
   , Structure
   , html
-  , h,
+  , h
   , p
   , ul
   , ol
@@ -12,4 +12,4 @@ module Html
   )
   where
 
-import Html.Internal
+import HsMarkup.Html.Internal

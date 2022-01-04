@@ -1,7 +1,7 @@
-module Convert where
+module HsMarkup.Convert where
 
-import qualified Markup
-import qualified Html
+import qualified HsMarkup.Markup as Markup
+import qualified HsMarkup.Html as Html
 
 convertStructure :: Markup.Structure -> Html.Structure
 convertStructure structure =
@@ -14,4 +14,3 @@ convertStructure structure =
 
 convert :: Html.Title -> Markup.Document -> Html.Html
 convert title = Html.html title . foldMap convertStructure
-

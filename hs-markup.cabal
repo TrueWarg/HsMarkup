@@ -1,0 +1,45 @@
+cabal-version:       1.12
+
+name:                hs-markup
+version:             0.1.0.0
+synopsis:            A custom markup generator
+description:         -
+homepage:            -
+bug-reports:         -
+license:             ApacheLicense2
+license-file:        LICENSE
+author:              -
+maintainer:          -
+category:            -
+extra-doc-files:
+  README.md
+  
+library
+  hs-source-dirs: src
+  build-depends:
+      base
+    , directory
+  exposed-modules:
+    HsMarkup
+      HsMarkup.Convert
+      HsMarkup.Html
+        HsMarkup.Html.Internal
+      HsMarkup.Markup
+  default-language: Haskell2010
+  ghc-options:
+    -Wall
+  -- other-modules:
+
+executable hs-markup-gen
+  hs-source-dirs: app
+  main-is: Main.hs
+  other-modules:
+    OptParse
+  build-depends:
+      base
+    , directory
+    , optparse-applicative
+    , hs-markup
+  default-language: Haskell2010
+  ghc-options:
+    -O
