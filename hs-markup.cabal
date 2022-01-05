@@ -18,7 +18,6 @@ library
   hs-source-dirs: src
   build-depends:
       base
-    , directory
   exposed-modules:
     HsMarkup
       HsMarkup.Convert
