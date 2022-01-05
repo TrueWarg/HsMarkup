@@ -3,11 +3,18 @@ module HsMarkup.Html
   , Title
   , Structure
   , html
-  , h
   , p
+  , h
+  , h1
   , ul
   , ol
   , code
+  , Content
+  , txtContent
+  , img
+  , link
+  , b
+  , i
   , render
   )
   where

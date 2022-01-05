@@ -8,6 +8,9 @@ newtype Html = Html String
 newtype Structure = Structure String
   deriving Show
 
+newtype Content = Content String
+  deriving Show
+
 type Title = String
 
 instance Semigroup Structure where
@@ -31,17 +34,14 @@ head = Structure . wrap "head" . escape
 body :: String -> Structure
 body = Structure . wrap "body" . escape
 
-p :: String -> Structure
-p = Structure . wrap "p" . escape
+p :: Content -> Structure
+p = Structure . wrap "p" . getContentValue
 
-h1 :: String -> Structure
-h1 = Structure . wrap "h1" . escape
+h1 :: Content -> Structure
+h1 = Structure . wrap "h1" . getContentValue
 
-h :: Natural -> String -> Structure
-h size = Structure . wrap ("h" <> show size) . escape
-
-li :: String -> Structure
-li = Structure . wrap "li" . escape
+h :: Natural -> Content -> Structure
+h size = Structure . wrap ("h" <> show size) . getContentValue
 
 ul :: [Structure] -> Structure
 ul = Structure . wrap "ul" . concat . map (wrap "li" . getStructureValue)
@@ -56,6 +56,10 @@ empty = Structure ""
 
 wrap :: String -> String -> String
 wrap tag content = "<"<> tag <>">" <> content <> "</" <> tag <> ">"
+
+wrapWithAttr :: String -> String -> String -> String
+wrapWithAttr tag attrs content =
+  "<" <> tag <> " " <> attrs <> ">" <> content <> "</" <> tag <> ">"
 
 escape :: String -> String
 escape = let 
@@ -73,6 +77,36 @@ escape = let
 
 getStructureValue :: Structure -> String
 getStructureValue (Structure value) = value
+
+
+getContentValue :: Content -> String
+getContentValue (Content value) = value
+
+txtContent :: String -> Content
+txtContent = Content . escape
+
+link :: FilePath -> Content -> Content
+link path content = 
+  Content $
+     wrapWithAttr
+         "a"
+         ("href=\"" <> escape path <> "\"")
+         (getContentValue content)
+
+img :: FilePath -> Content
+img path = Content $ "<img src=\"" <> escape path <> "\">"
+
+b :: Content -> Content
+b content = Content $ wrap "b" (getContentValue content)
+
+i :: Content -> Content
+i content = Content $ wrap "i" (getContentValue content)
+
+instance Semigroup Content where
+  (<>) a b = Content (getContentValue a <> getContentValue b)
+
+instance Monoid Content where
+  mempty = Content ""
 
 render :: Html -> String
 render html =
