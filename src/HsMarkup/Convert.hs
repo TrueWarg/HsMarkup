@@ -14,26 +14,3 @@ convertStructure structure =
 
 convert :: Html.Title -> Markup.Document -> Html.Html
 convert title = Html.html title . foldMap convertStructure
-
-buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
-buildIndex files =
-    let 
-        previews =
-            map( \ (path, doc) ->
-                case doc of
-                    Markup.Header 1 header : article ->
-                        Html.h 3 (Html.link path (Html.txtContent header))
-                        <> foldMap convertStructure (take 3 article)
-                        <> Html.p (Html.link path (Html.txtContent "..."))
-                    _ -> Html.h 3 (Html.link path (Html.txtContent path))
-
-            )
-            files
-    in
-        Html.html
-            "Blog"
-            (
-                Html.h1 (Html.link "index.html" (Html.txtContent "Blog"))
-                <> Html.h 2 (Html.txtContent "Posts")
-                <> mconcat previews
-            )

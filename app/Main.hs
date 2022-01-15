@@ -1,7 +1,7 @@
 module Main where
 
 import OptParse
-import qualified HsMarkup
+import HsMarkup
 
 import System.Exit (exitFailure)
 import System.Directory (doesFileExist)
@@ -29,7 +29,7 @@ main = do
             exists <- doesFileExist file
             shouldOpenFile <-
               if exists
-                then confirm
+                then confirm "File is exist. Are you shure ?"
                 else pure True
             if shouldOpenFile
               then
@@ -41,12 +41,13 @@ main = do
       hClose inputHandle
       hClose outputHandle
 
-confirm :: IO Bool
-confirm =
-  putStrLn "Are you sure? (y/n)" *>
-    getLine >>= \answer ->
-      case answer of
-        "y" -> pure True
-        "n" -> pure False
-        _ -> putStrLn "Invalid response. use y or n" *>
-          confirm
+confirm :: String -> IO Bool
+confirm message = do
+  putStrLn $ message <> " (y/n)"
+  answer <- getLine
+  case answer of
+    "y" -> pure True
+    "n" -> pure False
+    _ -> do
+       putStrLn "Invalid response. use y or n"
+       confirm message
