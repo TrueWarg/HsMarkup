@@ -18,9 +18,14 @@ library
   hs-source-dirs: src
   build-depends:
       base
+    , mtl
+    , directory
+    , filepath
   exposed-modules:
     HsMarkup
       HsMarkup.Convert
+      HsMarkup.Env
+      HsMarkup.Directory
       HsMarkup.Html
         HsMarkup.Html.Internal
       HsMarkup.Markup

@@ -2,6 +2,10 @@ module HsMarkup.Html
   ( Html
   , Title
   , Structure
+  , Header
+  , title
+  , stylesheet
+  , meta
   , html
   , p
   , h

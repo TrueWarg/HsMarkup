@@ -11,8 +11,8 @@ main :: IO ()
 main = do
   options <- parse
   case options of
-    ConvertDir input output ->
-      HsMarkup.convertDirectory input output
+    ConvertDir input output env ->
+      HsMarkup.convertDirectory env input output
 
     ConvertSingle input output -> do
       (title, inputHandle) <-

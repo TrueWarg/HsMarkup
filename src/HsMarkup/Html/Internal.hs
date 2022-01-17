@@ -13,23 +13,43 @@ newtype Content = Content String
 
 type Title = String
 
+newtype Header = Header String
+
+instance Semigroup Header where
+  (<>) (Header h1) (Header h2) =
+    Header (h1 <> h2)
+
+instance Monoid Header where
+  mempty = Header ""
+
 instance Semigroup Structure where
   (<>) s1 s2 = Structure (getStructureValue s1 <> getStructureValue s2) 
 
 instance Monoid Structure where
   mempty = empty
 
-html :: Title -> Structure -> Html
-html title content =
+html :: Header -> Structure -> Html
+html (Header header) content =
   Html
     ( wrap "html"
-      ( wrap "head" (wrap "title" (escape title))
+      ( wrap "head" header
         <> wrap "body" (getStructureValue content)
       )
     )
 
 head :: String -> Structure
 head = Structure . wrap "head" . escape
+
+title :: String -> Header
+title = Header . wrap "title" . escape
+
+stylesheet :: FilePath -> Header
+stylesheet path =
+    Header $ "<link rel=\"stylesheet\" type=\"text/css\" href=\"" <> escape path <> "\">"
+
+meta :: String -> String -> Header
+meta name content =
+  Header $ "<meta name=\"" <> escape name <> "\" content=\"" <> escape content <> "\">"
 
 body :: String -> Structure
 body = Structure . wrap "body" . escape

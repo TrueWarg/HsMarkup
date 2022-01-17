@@ -8,10 +8,11 @@ module OptParse
 
 import Data.Maybe (fromMaybe)
 import Options.Applicative
+import HsMarkup.Env
 
 data Options
     = ConvertSingle SingleInput SingleOutput
-    | ConvertDir FilePath FilePath
+    | ConvertDir FilePath FilePath Env
     deriving (Show)
 
 data SingleInput
@@ -92,7 +93,7 @@ pOutputFile = fmap OutputFile parser
 
 pConvertDir :: Parser Options
 pConvertDir = 
-    ConvertDir <$> pInputDir <*> pOutputDir
+    ConvertDir <$> pInputDir <*> pOutputDir <*> pEnviroment
 
 pInputDir :: Parser FilePath
 pInputDir =
@@ -112,4 +113,31 @@ pOutputDir =
             <> short 'o'
             <> metavar "DIRECTORY"
             <> help "output dir path"
+        )
+
+pEnviroment :: Parser Env
+pEnviroment = Env <$> pMarkupName <*> pStylesheetPath
+
+pMarkupName :: Parser String
+pMarkupName = 
+        strOption
+        (
+            long "name"
+            <> short 'n'
+            <> metavar "MARKUPNAME"
+            <> help "Markup Name"
+            <> value (markupName defaultEnv)
+            <> showDefault
+        )
+
+pStylesheetPath :: Parser String
+pStylesheetPath = 
+        strOption
+        (
+            long "styles"
+            <> short 's'
+            <> metavar "STYLES"
+            <> help "styles sheet path"
+            <> value (stylesheetPath defaultEnv)
+            <> showDefault
         )
