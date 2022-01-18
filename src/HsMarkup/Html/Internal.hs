@@ -60,7 +60,7 @@ p = Structure . wrap "p" . getContentValue
 h1 :: Content -> Structure
 h1 = Structure . wrap "h1" . getContentValue
 
-h :: Natural -> Content -> Structure
+h :: Int -> Content -> Structure
 h size = Structure . wrap ("h" <> show size) . getContentValue
 
 ul :: [Structure] -> Structure

@@ -5,18 +5,17 @@ module HsMarkup.Markup
   )
 where
 
-import Numeric.Natural
 import Data.Maybe (maybeToList)
 
 type Document = [Structure]
 
 data Structure
-  = Header Natural String
+  = Header Int String
   | Paragraph String
   | UnorderedList [String]
   | OrderedList [String]
   | CodeBlock [String]
-  deriving Show
+  deriving (Eq, Show)
 
 parse :: String -> Document
 parse = parseLines Nothing . lines
@@ -26,8 +25,14 @@ parseLines context txts =
   case txts of
     [] -> maybeToList context
 
-    ('*' : ' ' : line) : rest ->
-      maybe id (:) context (Header 1 (trim line) : parseLines Nothing rest)
+    ('*' : line) : rest -> 
+      let
+        (stars, remainginLine) = break (\ch -> ch /= '*' && ch /= ' ') line
+        -- todo: use multiple break to handle multiple spaces ?
+        dropSpace str = if (last str == ' ') then drop 1 str else str  
+        headerSize = length (dropSpace stars) + 1
+      in
+        maybe id (:) context (Header headerSize (trim remainginLine) : parseLines Nothing rest)
 
     ('-' : ' ' : line) : rest ->
       case context of 
